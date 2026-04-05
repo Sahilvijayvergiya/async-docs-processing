@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 from typing import Optional
 import os
 
@@ -23,8 +23,9 @@ class Settings(BaseSettings):
     # API
     API_V1_STR: str = "/api/v1"
     
-    class Config:
-        env_file = ".env"
+    model_config = {
+        "env_file": ".env"
+    }
 
 
 settings = Settings()
