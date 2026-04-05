@@ -1,285 +1,98 @@
 # Async Document Processing Workflow System
 
-A production-style full-stack application for asynchronous document processing with real-time progress tracking, built with FastAPI, React, PostgreSQL, Redis, and Celery.
+A full-stack asynchronous document processing system built with FastAPI (backend) and Next.js (frontend) that demonstrates modern web development practices.
 
-## 🚀 Features
+## 🚀 Quick Start
 
-- **Document Upload**: Upload one or more documents with drag-and-drop support
-- **Background Processing**: Asynchronous document processing using Celery workers
-- **Real-time Progress**: Live progress tracking via WebSocket connections
-- **Job Management**: View, filter, search, and sort processing jobs
-- **Review & Edit**: Review extracted data and make edits before finalization
-- **Export Functionality**: Export processed data as JSON or CSV
-- **Retry Mechanism**: Retry failed processing jobs
-- **Responsive UI**: Modern, clean interface built with React and Tailwind CSS
+### Prerequisites
+- Python 3.8+
+- Node.js 18+
+- npm
+
+### Backend Setup
+```bash
+cd backend
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# Mac/Linux:
+source venv/bin/activate
+pip install -r requirements.txt
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Access Application
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+
+## ✨ Features
+
+- � **Document Upload** - Drag-and-drop interface
+- ⚡ **Async Processing** - Background task simulation
+- 📊 **Progress Tracking** - Real-time updates
+- 🔍 **Search & Filter** - Advanced filtering
+- 📤 **Export Functions** - JSON/CSV export
+- 📱 **Responsive Design** - Mobile-friendly
 
 ## 🏗️ Architecture
 
-### Backend
-- **FastAPI**: Modern Python web framework for API development
-- **PostgreSQL**: Primary database for storing documents and job metadata
-- **Redis**: Message broker and caching layer
-- **Celery**: Distributed task queue for background processing
-- **SQLAlchemy**: ORM for database operations
-- **Pydantic**: Data validation and serialization
-
-### Frontend
-- **Next.js**: React framework with TypeScript
-- **Tailwind CSS**: Utility-first CSS framework
-- **Lucide React**: Icon library
-- **WebSocket**: Real-time communication for progress updates
-
-### Infrastructure
-- **Docker**: Containerization for consistent deployment
-- **Docker Compose**: Multi-container orchestration
-
-## 📋 Requirements
-
-- Docker and Docker Compose
-- Node.js 18+ (for local development)
-- Python 3.11+ (for local development)
-
-## 🛠️ Quick Start
-
-### Using Docker Compose (Recommended)
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd document-processing-system
-   ```
-
-2. **Start all services**
-   ```bash
-   docker-compose up -d
-   ```
-
-3. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Documentation: http://localhost:8000/docs
-
-### Local Development Setup
-
-#### Backend Setup
-
-1. **Navigate to backend directory**
-   ```bash
-   cd backend
-   ```
-
-2. **Create and activate virtual environment**
-   ```bash
-   python -m venv venv
-   
-   # Windows
-   venv\Scripts\activate
-   
-   # macOS/Linux
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your database and Redis configurations
-   ```
-
-5. **Start PostgreSQL and Redis**
-   ```bash
-   # Using Docker
-   docker run -d --name postgres -e POSTGRES_DB=document_processor -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -p 5432:5432 postgres:15
-   
-   docker run -d --name redis -p 6379:6379 redis:7-alpine
-   ```
-
-6. **Run database migrations** (if using Alembic)
-   ```bash
-   alembic upgrade head
-   ```
-
-7. **Start the FastAPI server**
-   ```bash
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-   ```
-
-8. **Start Celery worker** (in a separate terminal)
-   ```bash
-   cd backend
-   source venv/bin/activate  # or venv\Scripts\activate on Windows
-   celery -A app.workers.celery_app worker --loglevel=info
-   ```
-
-#### Frontend Setup
-
-1. **Navigate to frontend directory**
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set environment variables**
-   ```bash
-   echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1" > .env.local
-   ```
-
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-## 📖 API Documentation
-
-### Document Endpoints
-
-- `POST /api/v1/documents/upload` - Upload documents
-- `GET /api/v1/documents` - List all documents
-- `GET /api/v1/documents/{id}` - Get specific document
-- `DELETE /api/v1/documents/{id}` - Delete document
-
-### Job Endpoints
-
-- `GET /api/v1/jobs` - List processing jobs with filtering and sorting
-- `GET /api/v1/jobs/{id}` - Get specific job details
-- `PUT /api/v1/jobs/{id}` - Update job (review and edit)
-- `POST /api/v1/jobs/{id}/retry` - Retry failed job
-- `POST /api/v1/jobs/{id}/finalize` - Finalize completed job
-- `GET /api/v1/jobs/export/json` - Export jobs as JSON
-- `GET /api/v1/jobs/export/csv` - Export jobs as CSV
-
-### WebSocket Endpoint
-
-- `WS /api/v1/ws/progress/{job_id}` - Real-time progress updates
-
-## 🔄 Processing Workflow
-
-1. **Document Upload**: User uploads one or more documents
-2. **Job Creation**: System creates processing jobs and queues them
-3. **Background Processing**: Celery workers process documents asynchronously
-4. **Progress Tracking**: Real-time progress updates via Redis Pub/Sub and WebSocket
-5. **Review & Edit**: Users can review and edit extracted data
-6. **Finalization**: Users finalize the processed results
-7. **Export**: Export finalized data in various formats
-
-### Processing Stages
-
-1. `document_received` - Document uploaded and job created
-2. `parsing_started` - Document parsing initiated
-3. `parsing_completed` - Document parsing finished
-4. `extraction_started` - Field extraction initiated
-5. `extraction_completed` - Field extraction finished
-6. `storing_results` - Storing processed results
-7. `job_completed` - Processing completed successfully
-
-## 🧪 Testing
-
-### Running Tests
-
-#### Backend Tests
-```bash
-cd backend
-pytest
 ```
-
-#### Frontend Tests
-```bash
-cd frontend
-npm test
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend     │◄──►│   Backend API   │◄──►│   Database      │
+│  (Next.js)     │    │   (FastAPI)    │    │   (SQLite)      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 ## 📁 Project Structure
 
 ```
-document-processing-system/
-├── backend/
+predusk/
+├── backend/                 # FastAPI application
 │   ├── app/
-│   │   ├── api/
-│   │   │   └── v1/
-│   │   │       ├── endpoints/
-│   │   │       └── api.py
-│   │   ├── core/
-│   │   │   ├── config.py
-│   │   │   ├── database.py
-│   │   │   └── redis_client.py
-│   │   ├── models/
-│   │   │   └── document.py
-│   │   ├── schemas/
-│   │   │   └── document.py
-│   │   ├── services/
-│   │   │   ├── document_service.py
-│   │   │   └── job_service.py
-│   │   ├── workers/
-│   │   │   ├── celery_app.py
-│   │   │   └── document_processor.py
-│   │   └── main.py
+│   │   ├── api/v1/        # API endpoints
+│   │   ├── core/           # Configuration
+│   │   ├── models/         # Database models
+│   │   └── schemas/        # Data schemas
 │   ├── requirements.txt
-│   ├── Dockerfile
-│   └── .env.example
-├── frontend/
+│   └── Dockerfile
+├── frontend/               # Next.js application
 │   ├── src/
-│   │   ├── app/
-│   │   ├── components/
-│   │   │   ├── DocumentUpload.tsx
-│   │   │   ├── JobsDashboard.tsx
-│   │   │   └── JobDetail.tsx
-│   │   └── lib/
-│   │       └── api.ts
+│   │   ├── components/     # React components
+│   │   ├── lib/           # API client
+│   │   └── app/           # Pages
 │   ├── package.json
-│   ├── Dockerfile
-│   └── next.config.js
-├── docker-compose.yml
-└── README.md
+│   └── Dockerfile
+├── sample-documents/        # Test files
+└── docker-compose.yml       # Container setup
 ```
 
-## 🔧 Configuration
+## 🧪 Testing
 
-### Environment Variables
+Use sample documents in `sample-documents/`:
+1. Upload a document
+2. Monitor processing progress
+3. Review extracted data
+4. Export results
 
-#### Backend (.env)
-```env
-DATABASE_URL=postgresql://postgres:password@localhost:5432/document_processor
-REDIS_URL=redis://localhost:6379/0
-SECRET_KEY=your-secret-key-here
-UPLOAD_DIR=./uploads
-CELERY_BROKER_URL=redis://localhost:6379/0
-CELERY_RESULT_BACKEND=redis://localhost:6379/0
-```
+## � Documentation
 
-#### Frontend (.env.local)
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
-```
+See `SUBMISSION_INSTRUCTIONS.md` for detailed project documentation and assignment requirements.
 
-## 🚀 Deployment
+---
 
-### Production Deployment
-
-1. **Update environment variables** with production values
-2. **Set up SSL certificates** for HTTPS
-3. **Configure firewall rules** appropriately
-4. **Set up monitoring and logging**
-5. **Configure backup strategies** for database
-
-### Docker Production Deployment
-
-```bash
-# Build and start production containers
-docker-compose -f docker-compose.prod.yml up -d
-```
+**Built for academic submission demonstrating modern full-stack development practices.**
 
 ## 📊 Monitoring
 
 ### Health Checks
-
 - Backend: `GET /health`
 - Database: Connection status via API
 - Redis: Connection status via API
