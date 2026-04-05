@@ -5,20 +5,20 @@ import os
 
 class Settings(BaseSettings):
     # Database
-    DATABASE_URL: str = "sqlite:///./document_processor.db"
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./document_processor.db")
     
     # Redis
-    REDIS_URL: str = "redis://localhost:6379/0"
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     
     # Security
-    SECRET_KEY: str = "your-secret-key-here"
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-here")
     
     # File Upload
-    UPLOAD_DIR: str = "./uploads"
+    UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", "./uploads")
     
     # Celery
-    CELERY_BROKER_URL: str = "redis://localhost:6379/0"
-    CELERY_RESULT_BACKEND: str = "redis://localhost:6379/0"
+    CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+    CELERY_RESULT_BACKEND: str = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
     
     # API
     API_V1_STR: str = "/api/v1"
@@ -29,5 +29,6 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Create upload directory if it doesn't exist
-os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+# Create upload directory if it doesn't exist (only if not in Render)
+if not os.getenv("RENDER"):  # Only create locally, not in Render
+    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
